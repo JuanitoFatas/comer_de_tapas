@@ -6,12 +6,14 @@ Comer de Tapas
 [![Dependency Status](https://gemnasium.com/JuanitoFatas/comer_de_tapas.svg)][gemnasium]
 [![Inline docs ](http://inch-ci.org/github/juanitofatas/comer_de_tapas.svg)][docs]
 [![Code Climate](https://codeclimate.com/github/JuanitoFatas/comer_de_tapas.png)][codeclimate]
+[![Coverage](https://codeclimate.com/github/JuanitoFatas/comer_de_tapas/coverage.png)][coverage]
 
 [gem]: https://rubygems.org/gems/comer_de_tapas
 [travis]: https://travis-ci.org/JuanitoFatas/comer_de_tapas
 [gemnasium]: https://gemnasium.com/JuanitoFatas/comer_de_tapas
 [docs]: http://inch-ci.org/github/juanitofatas/comer_de_tapas
 [codeclimate]: https://codeclimate.com/github/JuanitoFatas/comer_de_tapas
+[coverage]: https://codeclimate.com/github/JuanitoFatas/comer_de_tapas
 
 [Ruby Tapas](http://www.rubytapas.com/) Downloader episodes for subscribers.
 
