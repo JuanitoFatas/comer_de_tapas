@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+Signal.trap('INT') { abort }
+require 'comer_de_tapas'
+ComerDeTapas::CLI.start(ARGV)
