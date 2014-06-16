@@ -1,11 +1,9 @@
 module ComerDeTapas
   class Subscription
-    CredentialYamlNotExist   = Class.new StandardError
-    CredentialYamlKeyError   = Class.new StandardError
-    CredentialYamlValueError = Class.new StandardError
+    KEYS = %w(email password save_path)
 
     def initialize
-      raise CredentialYamlNotExist, 'Please run `comer_de_tapas init` first' unless File.exist? CREDENTIAL_FILE
+      abort 'Please run `comer_de_tapas init` first' unless File.exist? CREDENTIAL_FILE
 
       set_subscription_data if subscription_data_valid?
     end
@@ -25,7 +23,8 @@ module ComerDeTapas
         @credential_yaml ||= YAML.load_file CREDENTIAL_FILE
       end
 
-      # Check if ~/.rubytapas/.credentials files are filled and corrected.
+      # Return true if ~/.rubytapas/.credentials files are filled and correct.
+      # @return [Boolen]
       def subscription_data_valid?
         # empty credential file's size is about 50-55.
         # 65 is when you have a very short email, password, and save_path.
@@ -38,12 +37,16 @@ module ComerDeTapas
         credential_data_valid?(get_validate load_credential_data)
       end
 
-      # Check if credential data valid?
+      # Return true if passed-in data all match criteria.
+      # @return [Boolen]
       def credential_data_valid? data
         data.each do |hash|
           hash.each do |k,v|
-            raise CredentialYamlKeyError, "Valid yaml keys: #{KEYS.join(' ,')}." unless %w(email password save_path).include? k
-            raise CredentialYamlValueError, "Please fill value for this one: #{k}" if v.nil?
+            abort <<-MSG unless KEYS.include? k
+Probably have a typo in #{CREDENTIAL_FILE}: #{k}
+Valid yaml keys: #{KEYS.join(', ')}.
+            MSG
+            abort "Please fill in #{k} in #{CREDENTIAL_FILE}" unless v
           end
         end
 
