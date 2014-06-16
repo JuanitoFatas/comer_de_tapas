@@ -46,6 +46,8 @@ If you want to save all Ruby Tapas episodes in your home folder. Please write it
 Usage
 -----
 
+After you filled subscription information, you can download episodes via this command:
+
     $ comer_de_tapas download
 
 Will fetch all episodes, then start to download it.

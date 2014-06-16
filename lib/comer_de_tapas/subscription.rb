@@ -3,7 +3,7 @@ module ComerDeTapas
     KEYS = %w(email password save_path)
 
     def initialize
-      abort 'Please run `comer_de_tapas init` first' unless File.exist? CREDENTIAL_FILE
+      abort 'Please run `comer_de_tapas init` first' unless CREDENTIAL_FILE.exist?
 
       set_subscription_data if subscription_data_valid?
     end
@@ -30,7 +30,7 @@ module ComerDeTapas
         # 65 is when you have a very short email, password, and save_path.
         # So when you filled in data, probably will > 65.
         if File.size(CREDENTIAL_FILE) < 65
-          puts "Did you fill in your subscription data in #{CREDENTIAL_FILE}?"
+          abort "Did you fill in your subscription data in #{CREDENTIAL_FILE}?"
           return false
         end
 

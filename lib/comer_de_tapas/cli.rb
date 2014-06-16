@@ -16,7 +16,8 @@ module ComerDeTapas
     desc 'init', 'Create config folder and files'
     def init
       @client.init!
-      say 'Please fill in your subscription info in ~/.rubytapas/.credentials'
+      say 'Please fill in your subscription info in ~/.rubytapas/.credentials.'
+      say 'When you finished, type `comer_de_tapas download` to download.'
     end
 
     # -f, --force, options[:force] => true, otherwise nil.

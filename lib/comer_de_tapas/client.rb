@@ -10,7 +10,7 @@ module ComerDeTapas
     # $ mkdir -p ~/.rubytapas/
     # $ touch ~/.rubytapas/.credentials
     def init!
-      if File.exist?(RUBYTAPAS_DIR) && File.exist?(CREDENTIAL_FILE)
+      if RUBYTAPAS_DIR.exist? && CREDENTIAL_FILE.exist?
         abort 'Credentials found. type `comer_de_tapas download` to download.'
       end
       create_rubytapas_files!
@@ -21,17 +21,19 @@ module ComerDeTapas
     # Parse it to episode, save episodes data as json to ~/.rubytapas.json
     def fetch_episodes! force=nil
       return puts 'Use cached episode data.' if fresh? && force.nil?
+      puts 'Force fetching. Getting latest Ruby Tapas...' if force
       puts 'Fetching episodes...'
-      get_feed_with_basic_auth
-      save_feed_data parse_xml_feed
-      puts 'Episodes successfully fetched.'
+      if get_feed_with_basic_auth
+        save_feed_data parse_xml_feed
+        puts 'Episodes successfully fetched and saved.'
+      end
     end
 
     # Create user specified folder: credentials[:save_path]
     def prepare_save_folder!
-      return puts "#{save_folder} found." if File.exist? save_folder
+      return puts "#{save_folder} found." if save_folder.exist?
 
-      FileUtils.mkdir_p save_folder.expand_path
+      save_folder.mkpath
       puts "#{save_folder} created."
     end
 
@@ -42,26 +44,26 @@ module ComerDeTapas
 
     # Load episodes json from EPISODES_JSON_FILE
     def load_episodes
-      @episodes ||= JSON.parse(File.read EPISODES_JSON_FILE)
+      @episodes ||= JSON.parse(EPISODES_JSON_FILE.read)
     end
 
     # User spefified folder to save episodes.
     # @return [Pathname]
     def save_folder
-      Pathname credentials[:save_path]
+      Pathname(credentials[:save_path]).expand_path
     end
 
     # Download episode in parallel using Actors
     # Powered by Celluloid::IO
     def download_all_tapas!
       episodes.each do |episode|
-        FileUtils.cd(save_folder.expand_path) do
+        FileUtils.cd(save_folder) do
           episode_title = episode['title']
           puts "Downloading Epsiode #{episode_title}..."
 
-          episode_folder = save_folder.join(sanitized episode_title).expand_path
+          episode_folder = save_folder.join(sanitized episode_title)
 
-          FileUtils.mkdir_p episode_folder unless File.exist? episode_folder
+          FileUtils.mkdir_p episode_folder unless episode_folder.exist?
 
           FileUtils.cd episode_folder do
             fetcher = Fetcher.new
@@ -89,8 +91,8 @@ module ComerDeTapas
       # @param [Array] downloadables
       def download_parallelly! downloadables
         downloadables.compact.each do |file, future|
-          response = future.value.to_s
           puts "Downloading #{file}..."
+          response = future.value.to_s
           IO.write file, response
           puts "#{file} saved."
         end
@@ -100,19 +102,30 @@ module ComerDeTapas
       # @param [Array] file_and_links
       def find_downloadables file_and_links, fetcher
         file_and_links.map do |file_and_link|
-          next if File.exist? file_and_link['filename']
+          file_name = file_and_link['filename']
+
+          # mp4 less than 3MB considered as unfinished. Redownload it.
+          FileUtils.rm file_name if small_mp4? file_name
+
+          next if File.exist? file_name
 
           q, v = file_and_link['link'].split('?').last.split('=')
-          [file_and_link['filename'], fetcher.future.fetch(DOWNLOAD_URL, cookie, { q => v })]
+          [file_name, fetcher.future.fetch(DOWNLOAD_URL, cookie, { q => v })]
         end
+      end
+
+      # Return true if file is a mp4 and its size less than 3MB.
+      def small_mp4?(file)
+        return false unless File.exist? file
+        File.size(file) < 3*1024*1024 && File.extname(file) == '.mp4'
       end
 
       # mkdir -p ~/.rubytapas
       # touch ~/.rubytapas/.credentials
       def create_rubytapas_files!
-        FileUtils.mkdir_p RUBYTAPAS_DIR
+        RUBYTAPAS_DIR.mkpath
         FileUtils.touch CREDENTIAL_FILE
-        IO.write CREDENTIAL_FILE, credential_template
+        CREDENTIAL_FILE.write credential_template
       end
 
       # Use to create empty credential file
@@ -124,8 +137,16 @@ module ComerDeTapas
       # Get raw feed data (XML), RSS
       def get_feed_with_basic_auth
         puts 'Authorizing...'
-        @feed_xml = HTTP.auth(:basic, authenticate_params).get(FEED_URL).body.to_s
-        puts 'Authroized.'
+        response = HTTP.auth(:basic, authenticate_params).get(FEED_URL).body.to_s
+
+        if response.empty?
+          abort "Authroized failed. Please check your email & password in #{CREDENTIAL_FILE}"
+        end
+
+        if @feed_xml = response
+          puts 'Authroized.'
+          return true
+        end
       end
 
       # Params for basic authentication
@@ -143,6 +164,7 @@ module ComerDeTapas
       # @return [Array<Hash>]
       def parse_xml_feed
         puts 'Parsing Episodes...'
+
         require 'nokogiri'
         items = Nokogiri::XML(feed_xml).xpath('//item')
 
@@ -176,7 +198,7 @@ module ComerDeTapas
       # Write episodes data to ~/.rubytapas/episodes.json
       def save_feed_data feed
         puts 'Saving episodes data to ~/.rubytapas/episodes.json...'
-        IO.write EPISODES_JSON_FILE, feed.to_json
+        EPISODES_JSON_FILE.write feed.to_json
         puts 'Saved.'
       end
 
@@ -200,8 +222,8 @@ module ComerDeTapas
       # If the episodes json was made of 259_200.seconds.ago (3 days)
       # @return [Boolean] true if episodes.json creation time < 3 days
       def fresh?
-        return false unless File.exist? EPISODES_JSON_FILE
-        Time.now - File.ctime(EPISODES_JSON_FILE) < 259_200
+        return false unless EPISODES_JSON_FILE.exist?
+        Time.now - EPISODES_JSON_FILE.ctime < 259_200
       end
   end
 end
