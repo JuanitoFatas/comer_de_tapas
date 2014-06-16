@@ -1,0 +1,24 @@
+before_install:
+  - gem update bundler
+bundler_args: --without development
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0.0
+  - 2.1
+  - rbx-2
+  - ruby-head
+matrix:
+  include:
+    - rvm: jruby-18mode
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
+    - rvm: jruby-19mode
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
+    - rvm: jruby-head
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
+  allow_failures:
+    - rvm: rbx-2
+    - rvm: jruby-head
+    - rvm: ruby-head
+  fast_finish: true
+script: bundle exec rake
