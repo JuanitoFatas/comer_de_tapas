@@ -66,7 +66,7 @@ module ComerDeTapas
           FileUtils.cd episode_folder do
             fetcher = Fetcher.new
             file_and_links = episode['links']
-            downloadables = find_downloadables file_and_links
+            downloadables = find_downloadables file_and_links, fetcher
 
             if downloadables.all? &:nil?
               puts 'Already downloaded, skip.'
@@ -98,7 +98,7 @@ module ComerDeTapas
 
       # Find episode's attachment that has not been downloaded
       # @param [Array] file_and_links
-      def find_downloadables file_and_links
+      def find_downloadables file_and_links, fetcher
         file_and_links.map do |file_and_link|
           next if File.exist? file_and_link['filename']
 
