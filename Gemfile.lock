@@ -1,0 +1,44 @@
+PATH
+  remote: .
+  specs:
+    comer_de_tapas (0.1.0)
+      celluloid-io
+      http (>= 0.6)
+      nokogiri
+      thor
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    celluloid (0.15.2)
+      timers (~> 1.1.0)
+    celluloid-io (0.15.0)
+      celluloid (>= 0.15.0)
+      nio4r (>= 0.5.0)
+    coderay (1.1.0)
+    http (0.6.1)
+      http_parser.rb (~> 0.6.0)
+    http_parser.rb (0.6.0)
+    method_source (0.8.2)
+    mini_portile (0.6.0)
+    minitest (5.3.4)
+    nio4r (1.0.0)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
+    pry (0.10.0)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    rake (10.3.2)
+    slop (3.5.0)
+    thor (0.19.1)
+    timers (1.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  comer_de_tapas!
+  minitest
+  pry
+  rake
