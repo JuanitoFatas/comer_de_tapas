@@ -3,7 +3,9 @@ Comer de Tapas
 
 [![Gem Version](http://img.shields.io/gem/v/comer_de_tapas.svg)][gem]
 [![Dependency Status](https://gemnasium.com/JuanitoFatas/comer_de_tapas.svg)][gemnasium]
+[![Inline docs ](http://inch-ci.org/github/juanitofatas/comer_de_tapas.svg)][docs]
 
+[docs]: http://inch-ci.org/github/juanitofatas/comer_de_tapas
 [gem]: https://rubygems.org/gems/comer_de_tapas
 [gemnasium]: https://gemnasium.com/JuanitoFatas/comer_de_tapas
 
