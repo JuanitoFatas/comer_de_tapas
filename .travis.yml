@@ -2,6 +2,7 @@ before_install:
   - gem update bundler
 bundler_args: --without development
 language: ruby
+env: CODECLIMATE_REPO_TOKEN="61ea5843cd7aa1ced6de1eab9636f719801de25b9103537cbdd902c16b539180"
 rvm:
   - 1.9.3
   - 2.0.0
