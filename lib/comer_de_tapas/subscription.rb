@@ -29,7 +29,7 @@ module ComerDeTapas
         # empty credential file's size is about 50-55.
         # 65 is when you have a very short email, password, and save_path.
         # So when you filled in data, probably will > 65.
-        if File.size(CREDENTIAL_FILE) < 65
+        if CREDENTIAL_FILE.size < 65
           abort "Did you fill in your subscription data in #{CREDENTIAL_FILE}?"
           return false
         end
