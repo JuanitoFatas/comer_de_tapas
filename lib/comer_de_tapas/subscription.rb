@@ -20,7 +20,7 @@ module ComerDeTapas
       # Load ~/.rubytapas/.credentials yaml
       def load_credential_data
         require 'yaml'
-        @credential_yaml ||= YAML.load_file CREDENTIAL_FILE
+        @credential_yaml ||= YAML.load CREDENTIAL_FILE.read
       end
 
       # Return true if ~/.rubytapas/.credentials files are filled and correct.
