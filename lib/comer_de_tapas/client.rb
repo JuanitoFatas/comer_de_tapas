@@ -137,7 +137,7 @@ module ComerDeTapas
       # Get raw feed data (XML), RSS
       def get_feed_with_basic_auth
         puts 'Authorizing...'
-        response = HTTP.auth(:basic, authenticate_params).get(FEED_URL).body.to_s
+        response = HTTP.auth(:basic, authenticate_params).get(FEED_URL).to_s
 
         if response.empty?
           abort "Authroized failed. Please check your email & password in #{CREDENTIAL_FILE}"
