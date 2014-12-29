@@ -16,10 +16,8 @@ Gem::Specification.new do |spec|
   spec.files = %w[CONTRIBUTING.md DEVELOPMENT.md LICENSE README.md Rakefile comer_de_tapas.gemspec]
   spec.files += Dir.glob('lib/**/*.rb')
   spec.files += Dir.glob('bin/**/*')
-  spec.files += Dir.glob('test/**/*')
 
   spec.executables   = ['comer_de_tapas']
-  spec.test_files    = Dir.glob('test/**/*')
   spec.require_paths = ['lib']
 
   spec.add_dependency 'thor'
