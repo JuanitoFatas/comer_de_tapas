@@ -5,20 +5,22 @@ require 'comer_de_tapas/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'comer_de_tapas'
-  spec.version       = ComerDeTapas::VERSION
   spec.authors       = ['Juanito Fatas']
   spec.email         = ['katehuang0320@gmail.com']
+
+  spec.homepage      = 'https://github.com/juanitofatas/comer_de_tapas'
   spec.summary       = %q{Ruby Tapas Episode Downloader.}
   spec.description   = spec.summary
-  spec.homepage      = 'https://github.com/juanitofatas/comer_de_tapas'
   spec.license       = 'MIT'
 
-  spec.files = %w[CONTRIBUTING.md DEVELOPMENT.md LICENSE README.md Rakefile comer_de_tapas.gemspec]
-  spec.files += Dir.glob('lib/**/*.rb')
-  spec.files += Dir.glob('bin/**/*')
-
+  spec.files = %w[CONTRIBUTING.md DEVELOPMENT.md LICENSE README.md Rakefile comer_de_tapas.gemspec] + Dir['bin/*']  + Dir['lib/**/*.rb']
   spec.executables   = ['comer_de_tapas']
-  spec.require_paths = ['lib']
+  spec.require_paths = %w(lib)
+
+  spec.version       = ComerDeTapas::VERSION
+
+  spec.required_ruby_version     = '>= 2.0.0'
+  spec.required_rubygems_version = '>= 2.2.2'
 
   spec.add_dependency 'thor'
   spec.add_dependency 'http', '>= 0.6'
