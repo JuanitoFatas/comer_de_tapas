@@ -24,11 +24,7 @@ module ComerDeTapas
     desc 'download', 'Download RubyTapas episodes'
     method_option 'force', :aliases => '-f', type: :boolean, desc: 'Force download.'
     def download
-      @client.fetch_episodes!(options[:force])
-      @client.prepare_save_folder!
-      @client.authenticate
-      @client.load_episodes
-      @client.download_all_tapas!
+      @client.download(force: options[:force])
     end
   end
 end

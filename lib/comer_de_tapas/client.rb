@@ -17,72 +17,80 @@ module ComerDeTapas
       puts '~/.rubytapas/.credentials folder and file has been created.'
     end
 
-    # Fetch latest feed on rubytapas.dpdcart.com
-    # Parse it to episode, save episodes data as json to ~/.rubytapas.json
-    def fetch_episodes! force=nil
-      return puts 'Use cached episode data.' if fresh? && force.nil?
-      puts 'Force fetching. Getting latest Ruby Tapas...' if force
-      puts 'Fetching episodes...'
-      if get_feed_with_basic_auth
-        save_feed_data parse_xml_feed
-        puts 'Episodes successfully fetched and saved.'
-      end
-    end
-
-    # Create user specified folder: credentials[:save_path]
-    def prepare_save_folder!
-      return puts "#{save_folder} found." if save_folder.exist?
-
-      save_folder.mkpath
-      puts "#{save_folder} created."
-    end
-
-    # Authenticate and return Cookie
-    def authenticate
-      @cookie ||= HTTP.post(LOGIN_URL, form_params).headers['Set-Cookie']
-    end
-
-    # Load episodes json from EPISODES_JSON_FILE
-    def load_episodes
-      @episodes ||= JSON.parse(EPISODES_JSON_FILE.read)
-    end
-
-    # User spefified folder to save episodes.
-    # @return [Pathname]
-    def save_folder
-      Pathname(credentials[:save_path]).expand_path
-    end
-
-    # Download episode in parallel using Actors
-    # Powered by Celluloid::IO
-    def download_all_tapas!
-      episodes.each do |episode|
-        FileUtils.cd(save_folder) do
-          episode_title = episode['title']
-          puts "Downloading Epsiode #{episode_title}..."
-
-          episode_folder = save_folder.join(sanitized episode_title)
-
-          FileUtils.mkdir_p episode_folder unless episode_folder.exist?
-
-          FileUtils.cd episode_folder do
-            fetcher = Fetcher.new
-            file_and_links = episode['links']
-            downloadables = find_downloadables file_and_links, fetcher
-
-            if downloadables.all? &:nil?
-              puts 'Already downloaded, skip.'
-              next
-            end
-
-            download_parallelly! downloadables
-            puts "Episode #{episode_title} content all saved."
-          end
-        end
-      end
+    def download(force: false)
+      fetch_episodes!(force)
+      prepare_save_folder!
+      authenticate
+      load_episodes
+      download_all_tapas!
     end
 
     private
+
+      # Fetch latest feed on rubytapas.dpdcart.com
+      # Parse it to episode, save episodes data as json to ~/.rubytapas.json
+      def fetch_episodes! force=false
+        return puts 'Use cached episode data.' if fresh? && !force
+        puts 'Force fetching. Getting latest Ruby Tapas...' if force
+        puts 'Fetching episodes...'
+        if get_feed_with_basic_auth
+          save_feed_data parse_xml_feed
+          puts 'Episodes successfully fetched and saved.'
+        end
+      end
+
+      # Create user specified folder: credentials[:save_path]
+      def prepare_save_folder!
+        return puts "#{save_folder} found." if save_folder.exist?
+
+        save_folder.mkpath
+        puts "#{save_folder} created."
+      end
+
+      # User spefified folder to save episodes.
+      # @return [Pathname]
+      def save_folder
+        Pathname(credentials[:save_path]).expand_path
+      end
+
+      # Authenticate and return Cookie
+      def authenticate
+        @cookie ||= HTTP.post(LOGIN_URL, form_params).headers['Set-Cookie']
+      end
+
+      # Load episodes json from EPISODES_JSON_FILE
+      def load_episodes
+        @episodes ||= JSON.parse(EPISODES_JSON_FILE.read)
+      end
+
+      # Download episode in parallel using Actors
+      # Powered by Celluloid::IO
+      def download_all_tapas!
+        episodes.each do |episode|
+          FileUtils.cd(save_folder) do
+            episode_title = episode['title']
+            puts "Downloading Epsiode #{episode_title}..."
+
+            episode_folder = save_folder.join(sanitized episode_title)
+
+            FileUtils.mkdir_p episode_folder unless episode_folder.exist?
+
+            FileUtils.cd episode_folder do
+              fetcher = Fetcher.new
+              file_and_links = episode['links']
+              downloadables = find_downloadables file_and_links, fetcher
+
+              if downloadables.all? &:nil?
+                puts 'Already downloaded, skip.'
+                next
+              end
+
+              download_parallelly! downloadables
+              puts "Episode #{episode_title} content all saved."
+            end
+          end
+        end
+      end
 
       attr_reader :feed_xml, :cookie, :episodes
 
