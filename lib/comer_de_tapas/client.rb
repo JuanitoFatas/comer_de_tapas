@@ -131,7 +131,7 @@ module ComerDeTapas
       # Use to create empty credential file
       def credential_template
         require 'yaml'
-        {"credentials"=>[{"email"=>nil}, {"password"=>nil}, {"save_path"=>nil}]}.to_yaml
+        {'credentials'=>[{'email'=>nil}, {'password'=>nil}, {'save_path'=>nil}]}.to_yaml
       end
 
       # Get raw feed data (XML), RSS
@@ -185,7 +185,7 @@ module ComerDeTapas
       end
 
       # Given links, parse to
-      # { filename: "123.rb", "/subscriber/download?file_id=34567" }
+      # { filename: '123.rb', '/subscriber/download?file_id=34567' }
       # @return [Array<Hash>]
       def attachments links
         links.each_with_object([]) do |link, episode|
