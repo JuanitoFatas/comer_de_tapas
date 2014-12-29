@@ -7,8 +7,9 @@ env:
     - CODECLIMATE_REPO_TOKEN=61ea5843cd7aa1ced6de1eab9636f719801de25b9103537cbdd902c16b539180
 rvm:
   - 1.9.3
-  - 2.0.0
+  - 2.0
   - 2.1
+  - 2.2
   - rbx-2
   - ruby-head
 matrix:
@@ -23,3 +24,5 @@ matrix:
     - rvm: ruby-head
   fast_finish: true
 script: bundle exec rake
+
+sudo: false
