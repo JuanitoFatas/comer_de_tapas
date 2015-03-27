@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.required_rubygems_version = '>= 2.2.2'
 
   spec.add_dependency 'thor'
-  spec.add_dependency 'http', '>= 0.6'
+  spec.add_dependency 'http', '>= 0.7.3'
   spec.add_dependency 'nokogiri'
   spec.add_dependency 'celluloid-io'
 end
