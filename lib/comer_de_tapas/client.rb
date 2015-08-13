@@ -1,7 +1,7 @@
-require 'http'
-require 'json'
-require 'pathname'
-require 'fileutils'
+require "http"
+require "json"
+require "pathname"
+require "fileutils"
 
 module ComerDeTapas
   class Client
@@ -11,10 +11,10 @@ module ComerDeTapas
     # $ touch ~/.rubytapas/.credentials
     def init!
       if RUBYTAPAS_DIR.exist? && CREDENTIAL_FILE.exist?
-        abort 'Credentials found. type `comer_de_tapas download` to download.'
+        abort "Credentials found. type `comer_de_tapas download` to download."
       end
       create_rubytapas_files!
-      puts '~/.rubytapas/.credentials folder and file has been created.'
+      puts "~/.rubytapas/.credentials folder and file has been created."
     end
 
     def download(force: false)
@@ -30,12 +30,13 @@ module ComerDeTapas
       # Fetch latest feed on rubytapas.dpdcart.com
       # Parse it to episode, save episodes data as json to ~/.rubytapas.json
       def fetch_episodes! force=false
-        return puts 'Use cached episode data.' if fresh? && !force
-        puts 'Force fetching. Getting latest Ruby Tapas...' if force
-        puts 'Fetching episodes...'
+        return puts "Use cached episode data." if fresh? && !force
+
+        puts "Force fetching. Getting latest Ruby Tapas..." if force
+        puts "Fetching episodes..."
         if get_feed_with_basic_auth
           save_feed_data parse_xml_feed
-          puts 'Episodes successfully fetched and saved.'
+          puts "Episodes successfully fetched and saved."
         end
       end
 
@@ -55,7 +56,7 @@ module ComerDeTapas
 
       # Authenticate and return Cookie
       def authenticate
-        @cookie ||= HTTP.post(LOGIN_URL, form_params).headers['Set-Cookie']
+        @cookie ||= HTTP.post(LOGIN_URL, form_params).headers["Set-Cookie"]
       end
 
       # Load episodes json from EPISODES_JSON_FILE
@@ -68,7 +69,7 @@ module ComerDeTapas
       def download_all_tapas!
         episodes.each do |episode|
           FileUtils.cd(save_folder) do
-            episode_title = episode['title']
+            episode_title = episode["title"]
             puts "Downloading Epsiode #{episode_title}..."
 
             episode_folder = save_folder.join(sanitized episode_title)
@@ -77,11 +78,11 @@ module ComerDeTapas
 
             FileUtils.cd episode_folder do
               fetcher = Fetcher.new
-              file_and_links = episode['links']
+              file_and_links = episode["links"]
               downloadables = find_downloadables file_and_links, fetcher
 
               if downloadables.all? &:nil?
-                puts 'Already downloaded, skip.'
+                puts "Already downloaded, skip."
                 next
               end
 
@@ -110,14 +111,14 @@ module ComerDeTapas
       # @param [Array] file_and_links
       def find_downloadables file_and_links, fetcher
         file_and_links.map do |file_and_link|
-          file_name = file_and_link['filename']
+          file_name = file_and_link["filename"]
 
           # mp4 less than 3MB considered as unfinished. Redownload it.
           FileUtils.rm file_name if small_mp4? file_name
 
           next if File.exist? file_name
 
-          q, v = file_and_link['link'].split('?').last.split('=')
+          q, v = file_and_link["link"].split("?").last.split("=")
           [file_name, fetcher.future.fetch(DOWNLOAD_URL, cookie, { q => v })]
         end
       end
@@ -125,7 +126,7 @@ module ComerDeTapas
       # Return true if file is a mp4 and its size less than 3MB.
       def small_mp4?(file)
         return false unless File.exist? file
-        File.size(file) < 3*1024*1024 && File.extname(file) == '.mp4'
+        File.size(file) < 3*1024*1024 && File.extname(file) == ".mp4"
       end
 
       # mkdir -p ~/.rubytapas
@@ -138,13 +139,13 @@ module ComerDeTapas
 
       # Use to create empty credential file
       def credential_template
-        require 'yaml'
-        {'credentials'=>[{'email'=>nil}, {'password'=>nil}, {'save_path'=>nil}]}.to_yaml
+        require "yaml"
+        {"credentials"=>[{"email"=>nil}, {"password"=>nil}, {"save_path"=>nil}]}.to_yaml
       end
 
       # Get raw feed data (XML), RSS
       def get_feed_with_basic_auth
-        puts 'Authorizing...'
+        puts "Authorizing..."
         response = HTTP.auth(:basic, authenticate_params).get(FEED_URL).to_s
 
         if response.empty?
@@ -152,7 +153,7 @@ module ComerDeTapas
         end
 
         if @feed_xml = response
-          puts 'Authroized.'
+          puts "Authroized."
           return true
         end
       end

@@ -1,4 +1,4 @@
-require 'celluloid/io'
+require "celluloid/io"
 
 module ComerDeTapas
   class Fetcher
@@ -9,8 +9,8 @@ module ComerDeTapas
     # @param cookie
     # @option query [Hash]
     def fetch url, cookie, query={}
-      require 'http'
-      HTTP.with('Cookie' => cookie).get(url, ssl_socket_class: Celluloid::IO::SSLSocket, params: query)
+      require "http"
+      HTTP.with("Cookie" => cookie).get(url, ssl_socket_class: Celluloid::IO::SSLSocket, params: query)
     end
   end
 end
