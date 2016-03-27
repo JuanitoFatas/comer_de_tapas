@@ -1,3 +1,5 @@
+# This project is obsoleted. Try other alternatives from [Ruby Tapas FAQ](http://www.rubytapas.com/faq).
+
 Comer de Tapas
 ==============
 
